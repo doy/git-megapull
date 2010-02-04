@@ -32,7 +32,7 @@ hashref with repo names as keys and repo URIs as values.
 =cut
 
 sub repo_uris {
-  my $config  = Config::INI::Reader->read_file("$ENV{HOME}/.gitconfig");
+  my ($config, $args) = @_;
   my $login   = $config->{github}{login} || die "no github login\n";
   my $token   = $config->{github}{token} || die "no github token\n";
 
