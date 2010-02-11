@@ -85,46 +85,11 @@ sub execute {
   die "bad source: not a Git::Megapull::Source\n"
     unless eval { $source->isa('Git::Megapull::Source') };
 
-  my $repos = $source->repo_uris($config, $args);
+  my $s = $source->new($opt);
 
-  my %existing_dir  = map { $_ => 1 } grep { $_ !~ m{\A\.} and -d $_ } <*>;
-
-  for my $name (sort { $a cmp $b } keys %$repos) {
-    my $name = $name;
-    my $uri  = $repos->{ $name };
-
-    if (-d $name) {
-      if (not $opt->{clonely}) {
-        $self->__do_cmd(
-          "cd $name && "
-          . "git fetch $opt->{origin} && "
-          . "git merge $opt->{origin}/master 2>&1"
-        );
-      }
-    } else {
-      $self->_clone_repo($name, $uri, $opt);
-    }
-
-    delete $existing_dir{ $name };
-  }
-
-  for (keys %existing_dir) {
-    warn "unknown directory found: $_\n";
-  }
+  $s->update_all(@$args);
 }
 
 sub _default_source {}
-sub _clone_repo {
-  my ($self, $repo, $uri, $opt) = @_;
-
-  my $bare = $opt->{bare} ? '--bare' : '';
-  $self->__do_cmd("git clone -o $opt->{origin} $bare $uri 2>&1");
-}
-
-sub __do_cmd {
-  my ($self, $cmd) = @_;
-  print "$cmd\n";
-  system("$cmd");
-}
 
 1;
