@@ -3,5 +3,8 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
           add sources for gitweb and text files
 
+          refactor some things so that megapulling from within other scripts is
+          easier
+
 0.100110  2010-01-11 19:10:14 America/New_York
           do not require users to install JSON::XS
